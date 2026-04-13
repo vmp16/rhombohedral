@@ -1,0 +1,130 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+
+\title{McCann model for rhomohedral graphene}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This report analyzes the behavior of ABC-stacked multilayer graphene using the McCann model. We specifically compare the cases for $N=1$ (monolayer) and $N=5$ layers, focusing on their energy bands, Berry curvature, and the convergence of the local Chern number contribution.
+
+\section{Model and Analytical Equations}
+The system is described by a 2x2 effective Hamiltonian in the vicinity of a K point (low energy):
+\begin{equation}
+H = \begin{pmatrix}
+\Delta & X(\mathbf{k}) \\
+X^\dagger(\mathbf{k}) & -\Delta
+\end{pmatrix}
+\end{equation}
+where $2\Delta$ is the energy gap and $X(\mathbf{k})$ is the off-diagonal coupling term. In polar coordinates $(k, \phi)$, the term $X$ for $N$ layers is given by:
+\begin{equation}
+X(k, \phi) = \frac{(v k e^{i \xi \phi})^N}{(-\gamma_1)^{N-1}}
+\end{equation}
+where $v = \frac{\sqrt{3}}{2} \gamma_0$ in natural units ($a=1$, $\hbar=1$) and $\xi = \pm 1$ is the valley index.
+
+\subsection{Energy Bands}
+The eigenvalues of the Hamiltonian represent the energy bands:
+\begin{equation}
+\varepsilon(\mathbf{k}) = \pm E(\mathbf{k}) = \pm \sqrt{|X(\mathbf{k})|^2 + \Delta^2}
+\end{equation}
+
+\subsection{Eigenstates}
+The normalized eigenstates for the positive and negative bands are given by:
+\begin{equation}
+|\psi_+\rangle = \frac{1}{\mathcal{N}_+} \begin{pmatrix} E + \Delta \\ X^\dagger \end{pmatrix}, \quad 
+|\psi_-\rangle = \frac{1}{\mathcal{N}_-} \begin{pmatrix} -X \\ E + \Delta \end{pmatrix}
+\end{equation}
+where $\mathcal{N}_{\pm}$ are the normalization constants.
+
+\subsection{Berry Curvature}
+The Berry curvature $\Omega$ is calculated using the Kubo-like formula. For the results presented in this report, we specifically show the Berry curvature calculated for the positive energy band:
+\begin{equation}
+\Omega_n = i \sum_{m\neq n} \frac{\langle \psi_{n} | \mathbf{\nabla_k} H | \psi_{m} \rangle \times \langle \psi_{m} | \mathbf{\nabla_k} H | \psi_{n} \rangle}{(E_{n} - E_{m})^2}
+\end{equation}
+Here, the gradient is calculated in polar coordinates as:
+\begin{equation}
+    \mathbf{\nabla_k} = \frac{\partial}{\partial k}\vec{e}_k + \frac{1}{k} \frac{\partial}{\partial \phi} \vec{e}_{\phi}
+\end{equation}
+
+\section{Numerical Results}
+
+\subsection{Energy Bands Comparison}
+Figure \ref{fig:bands} shows the energy bands for $N=1$ and $N=5$. For $N=1$, the dispersion is linear at high $k$ (Dirac-like), while for $N=5$ it is much flatter near $k=0$ due to the $k^N$ dependence.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/bands_comparison.png}
+    \caption{Energy bands for N=1 and N=5 layers.}
+    \label{fig:bands}
+\end{figure}
+
+\subsection{Berry Curvature}
+The Berry curvature for $N=1$ peaks sharply at $k=0$. However, for $N=5$, the curvature is suppressed at the center and peaks at finite $k$ (Figure \ref{fig:berry}).
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/berry_curv_comparison.png}
+    \caption{Berry curvature comparison (Positive Band).}
+    \label{fig:berry}
+\end{figure}
+
+\section{Berry Curvature Integration}
+
+The local Chern number contribution is obtained by integrating the Berry curvature over a region in $k$-space. While the McCann model is isotropic and naturally expressed in polar coordinates, the numerical integration is performed over a uniform Cartesian meshgrid $(k_x, k_y)$. This choice provides several numerical advantages:
+\begin{itemize}
+    \item \textbf{Uniform Sampling Density:} In a Cartesian grid, every point represents an identical area element $\Delta A = \Delta k_x \Delta k_y$. In a polar grid, the area element $dA = k \, dk \, d\phi$ is proportional to $k$ and vanishes as $k \to 0$. Since the Berry curvature is often highly concentrated near the Dirac point ($k=0$ for monolayer graphene), the Cartesian grid ensures high sampling density where it is most needed without requiring a non-linear radial distribution.
+    \item \textbf{Singularity Avoidance:} The Cartesian coordinate system avoids the coordinate singularity at the origin inherent to polar grids, which simplifies the handling of the peak in $\Omega$ at $k=0$ for $N=1$.
+    % \item \textbf{Simplified Masking:} Evaluating the integral over an arbitrary region (such as an energy-restricted domain) becomes a straightforward summation over masked points in the flattened grid.
+\end{itemize}
+
+To ensure a consistent comparison between different layer numbers $N$, we define the integration domain using an energy cutoff $E_{max}$ rather than a fixed momentum radius. The integral is evaluated numerically as:
+\begin{equation}
+C_{local}(E_{max}) = \frac{1}{2\pi} \iint_{E(\mathbf{k}) \le E_{max}} \Omega_{pos}(\mathbf{k}) dk_x dk_y \approx \frac{\Delta A}{2\pi} \sum_{i \in \text{mask}} \Omega_{pos}(\mathbf{k}_i)
+\end{equation}
+where the sum runs over all points $k_i$ satisfying the energy condition $E(\mathbf{k}_i) \le E_{max}$, and $\Delta A$ is the constant area per grid point.
+
+Figure \ref{fig:convergence} shows that as the energy cutoff $E_{max}$ increases, the integral converges to $N/2$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.65\textwidth]{../figures/chern_convergence.png}
+    \caption{Convergence of the local Chern number contribution to $N/2$ as a function of the energy cutoff $E_{max}$.}
+    \label{fig:convergence}
+\end{figure}
+
+
+\section{Valley Comparison}
+The two K-valleys in the hexagonal lattice, indexed by $\xi = \pm 1$, are related by time-reversal symmetry. While the energy dispersion is identical for both valleys, the Berry curvature of a given band changes its sign:
+\begin{align}
+    \mathcal{T}:~~ &\mathbf{k} \to -\mathbf{k}\\
+        &E(\mathbf{-k}) = E(\mathbf{k}) \notag \\
+        &\Omega(-\mathbf{k}) = -\Omega(\mathbf{k}) \notag
+\end{align}
+Figure \ref{fig:valley_comp} compares the positive energy band and the corresponding Berry curvature for $N=5$ layers, showing the sign inversion between the two K valleys.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{../figures/valley_comparison_detailed.png}
+    \caption{Comparison of the positive energy band (left) and Berry curvature (right) for valleys $\xi=1$ and $\xi=-1$ ($N=5$ layers).}
+    \label{fig:valley_comp}
+\end{figure}
+
+Consequently, the local Chern number contributions for $N=5$ have opposite signs. The integration of the Berry curvature over a circle of radius k=1 gives:
+\begin{itemize}
+    \item Valley $\xi = 1$: $C_{local} = 2.499949$
+    \item Valley $\xi = -1$: $C_{local} = -2.499949$
+\end{itemize}
+The total Chern number for the system, considering both valleys, would vanish in the presence of time-reversal symmetry ($C_{tot} = C_{K} + C_{K'} = 0$).
+
+\section{Conclusion}
+The $N$-layer McCann system exhibits a topological Berry phase of $N\pi$, leading to a local Chern contribution of $N/2$ per valley in the gapped state. The distribution of the Berry curvature becomes increasingly non-trivial as $N$ increases, with the peak shifting away from the Dirac point while the total topological charge remains conserved and proportional to $N$.
+
+\end{document}
