@@ -12,7 +12,7 @@ from model.config import GAMMA0, GAMMA1, VALLEY_IDX, DELTA, N, N_PTS, K_MIN, K_M
 
 def main():
     # Build the system
-    system = McCannSystem(GAMMA0, GAMMA1, -1, DELTA, N)
+    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX, DELTA, N)
 
     # Map k-space to consider in polar coordinates (p, phi)
     # For the x direction, phi=0
