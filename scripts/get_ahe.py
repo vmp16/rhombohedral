@@ -29,6 +29,8 @@ mu_eff = 0.0 / GAMMA0       # Fermi level [GAMMA0 units]
 # -----------------------------------------------------------
 
 def main():
+    print(10*'=' + f" CALCULATING THE AHE FOR MU = {mu_eff} " + 10*'=')
+    
     sigma_xy_list = []
 
     for xi, delta in zip(VALLEY_IDX, DELTAS):
