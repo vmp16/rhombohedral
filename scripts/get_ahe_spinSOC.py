@@ -8,7 +8,7 @@ sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import calculate_ahe
-from model.config import GAMMA0, GAMMA1, N, N_LINEAR, K_MAX_INT as K_MAX
+from model.config import GAMMA0, GAMMA1, N, N_LINEAR, K_MAX_INT as K_MAX, LAMBDA
 
 # -------------------- CONFIGURATION ------------------------
 
@@ -28,21 +28,23 @@ kB = 8.617e-5       # Boltzmann constant in eV/K
 T_real = 20         # temperature [K]
 T_eff = (kB * T_real) / GAMMA0
 
-mu_eff = 0.15 / GAMMA0       # Fermi level [GAMMA0 units]
+mu_eff = 0.0 / GAMMA0       # Fermi level [GAMMA0 units]
 
 # -----------------------------------------------------------
 
 def main():
-    print(10*'=' + f" CALCULATING THE MAGNETIC AHE FOR MU = {mu_eff} " + 10*'=')
+    print(10*'=' + f" CALCULATING AHE WITH SPIN AND SOC FOR MU = {mu_eff} " + 10*'=')
     
     sigma_xy_list = []
 
     for xi, delta_K in zip(VALLEY_IDX, DELTAS):
         print(f"Calculating for valley = {xi}...")
 
-        # Build one system per spin
-        system_up = McCannSystem(GAMMA0, GAMMA1, xi, delta_K[0], N)
-        system_dn = McCannSystem(GAMMA0, GAMMA1, xi, delta_K[1], N)
+        # Build one system per spin with effective Delta accounting for the SOC
+        delta_up = delta_K[0] + xi * LAMBDA
+        delta_dn = delta_K[1] - xi * LAMBDA
+        system_up = McCannSystem(GAMMA0, GAMMA1, xi, delta_up, N)
+        system_dn = McCannSystem(GAMMA0, GAMMA1, xi, delta_dn, N)
 
         # Calculate the conductivity
         sigma_xy_up, _ = calculate_ahe(system_up, K_MAX, N_LINEAR, T_eff, mu_eff)

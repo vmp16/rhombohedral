@@ -13,3 +13,6 @@ K_MAX = 0.2
 # Integration Defaults
 N_LINEAR = 400
 K_MAX_INT = 1.0
+
+# Amplitude of the Spin-Orbit coupling (SOC)
+LAMBDA = 1e-3
