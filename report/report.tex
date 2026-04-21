@@ -124,6 +124,45 @@ Consequently, the local Chern number contributions for $N=5$ have opposite signs
 \end{itemize}
 The total Chern number for the system, considering both valleys, would vanish in the presence of time-reversal symmetry ($C_{tot} = C_{K} + C_{K'} = 0$).
 
+\section{Anomalous Hall Effect with Spin and SOC}
+
+Recent additions to the project include the calculation of the Anomalous Hall Effect (AHE) considering both spin and valley degrees of freedom, as well as the effect of Spin-Orbit Coupling (SOC).
+
+\subsection{Magnetic AHE at $\mu=0$}
+We calculate the total Hall conductivity $\sigma_{xy}$ for the system at the Fermi level $\mu=0$. We use $N=5$ layers and a temperature $T=20$ K. The gap parameters used are:
+\begin{itemize}
+    \item Valley $K$ ($\xi=1$): $\Delta_{\uparrow} = 0.1$, $\Delta_{\downarrow} = 0.0$
+    \item Valley $K'$ ($\xi=-1$): $\Delta_{\uparrow} = 0.0$, $\Delta_{\downarrow} = -0.1$
+\end{itemize}
+
+The calculated total conductivity for the spin-valley case (without SOC) is:
+\begin{equation}
+    \sigma_{xy}^{total}(\mu=0) \approx -5.000 \,\, e^2/h
+\end{equation}
+which corresponds to the sum of the Chern contributions of the occupied bands ($N/2 = 2.5$ per valley per spin when applicable).
+
+When including the Spin-Orbit Coupling ($\lambda = 10^{-3} \gamma_0$), the results at $\mu=0$ remain consistent with the topological expectation:
+\begin{equation}
+    \sigma_{xy}^{total, SOC}(\mu=0) \approx -5.000 \,\, e^2/h
+\end{equation}
+as the SOC slightly shifts the gaps but the overall topology of the occupied manifold at $\mu=0$ is preserved.
+
+\subsection{AHE vs. Chemical Potential}
+The dependence of the AHE on the chemical potential $\mu$ was scanned using the following parameters:
+\begin{itemize}
+    \item Valley $K$: $\Delta_{\uparrow} = 0.1$, $\Delta_{\downarrow} = 0.0$
+    \item Valley $K'$: $\Delta_{\uparrow} = 0.0$, $\Delta_{\downarrow} = -0.2$
+\end{itemize}
+
+Figure \ref{fig:ahe_scan} shows the results of the scan. It is important to note that the convergence to $0$ far from $\mu=0$ (as well as the convergence to $N/2$ when there is a plateau) is very slow and difficult to fully observe in numerical simulations due to the long tails of the Berry curvature.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../figures/ahe_scan_spinSOC.png}
+    \caption{Total Hall conductivity $\sigma_{xy}$ as a function of the chemical potential $\mu/\gamma_0$ including spin and SOC.}
+    \label{fig:ahe_scan}
+\end{figure}
+
 \section{Conclusion}
 The $N$-layer McCann system exhibits a topological Berry phase of $N\pi$, leading to a local Chern contribution of $N/2$ per valley in the gapped state. The distribution of the Berry curvature becomes increasingly non-trivial as $N$ increases, with the peak shifting away from the Dirac point while the total topological charge remains conserved and proportional to $N$.
 

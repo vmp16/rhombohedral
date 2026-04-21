@@ -25,8 +25,8 @@ def generate_plots():
         system = McCannSystem(GAMMA0, GAMMA1, 1, DELTA, N)
         energy = system.get_energy_bands(k, phi)
         plt.subplot(1, 2, i+1)
-        plt.plot(k, energy, 'b-', label='Pos Band')
-        plt.plot(k, -energy, 'r-', label='Neg Band')
+        plt.plot(k, energy[0], 'b-', label='Pos Band')
+        plt.plot(k, energy[1], 'r-', label='Neg Band')
         plt.ylim(-E_LIMIT_PLOT, E_LIMIT_PLOT) # Apply energy cutoff to the plot
         plt.title(f'Bands for N={N}')
         plt.xlabel('k')

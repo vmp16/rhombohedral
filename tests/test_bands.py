@@ -24,8 +24,8 @@ def main():
 
     # Plotting
     plt.figure(figsize=(8, 6))
-    plt.plot(k, energy, label='Positive band', color='blue')
-    plt.plot(k, -energy, label='Negative band', color='red')
+    plt.plot(k, energy[0], label='Positive band', color='blue')
+    plt.plot(k, energy[1], label='Negative band', color='red')
 
     plt.xlabel(r'$k$')
     plt.ylabel('Energy')

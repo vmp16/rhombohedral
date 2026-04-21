@@ -44,11 +44,9 @@ def main():
         sigma_xy_list = []
 
         for xi, delta_K in zip(VALLEY_IDX, DELTAS):
-            # Build one system per spin with effective Delta accounting for the SOC
-            delta_up = delta_K[0] + xi * LAMBDA
-            delta_dn = delta_K[1] - xi * LAMBDA
-            system_up = McCannSystem(GAMMA0, GAMMA1, xi, delta_up, N)
-            system_dn = McCannSystem(GAMMA0, GAMMA1, xi, delta_dn, N)
+            # Build one system per spin with diagonal shift h0 accounting for the SOC
+            system_up = McCannSystem(GAMMA0, GAMMA1, xi, delta_K[0], N, h0=xi * LAMBDA)
+            system_dn = McCannSystem(GAMMA0, GAMMA1, xi, delta_K[1], N, h0=-xi * LAMBDA)
 
             # Calculate the conductivity
             sigma_xy_up, _ = calculate_ahe(system_up, K_MAX, N_LINEAR, T_eff, mu)
@@ -75,7 +73,8 @@ def main():
     plt.ylabel(r"$\sigma_{xy} / (e^2/h)$")
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig(project_root / "figures/ahe_scan_spinSOC.png")
+    print("\nPlot saved to figures/ahe_scan_spinSOC.png")
 
 if __name__ == '__main__':
     main()

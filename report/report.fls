@@ -166,6 +166,11 @@ INPUT ../figures/valley_comparison_detailed.png
 INPUT ../figures/valley_comparison_detailed.png
 INPUT ../figures/valley_comparison_detailed.png
 INPUT /usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc
+INPUT ../figures/ahe_scan_spinSOC.png
+INPUT ../figures/ahe_scan_spinSOC.png
+INPUT ../figures/ahe_scan_spinSOC.png
+INPUT ../figures/ahe_scan_spinSOC.png
+INPUT ../figures/ahe_scan_spinSOC.png
 INPUT report.aux
 INPUT ./report.out
 INPUT ./report.out
@@ -174,6 +179,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb

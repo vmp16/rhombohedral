@@ -41,10 +41,10 @@ def main():
         energy_up = system_up.get_energy_bands(k, phi)
         energy_dn = system_dn.get_energy_bands(k, phi)
 
-        ax[i].plot(k, energy_up, color='blue', label='spin up')
-        ax[i].plot(k, -energy_up, color='blue')
-        ax[i].plot(k, energy_dn, color='red', label='spin down')
-        ax[i].plot(k, -energy_dn, color='red')
+        ax[i].plot(k, energy_up[0], color='blue', label='spin up')
+        ax[i].plot(k, energy_up[1], color='blue')
+        ax[i].plot(k, energy_dn[0], color='red', label='spin down')
+        ax[i].plot(k, energy_dn[1], color='red')
         
         ax[i].set_xlabel("k", fontsize=16)
         ax[i].set_title(f"Valley index {xi}", fontsize=16)

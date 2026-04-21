@@ -28,7 +28,7 @@ kB = 8.617e-5       # Boltzmann constant in eV/K
 T_real = 20         # temperature [K]
 T_eff = (kB * T_real) / GAMMA0
 
-mu_eff = 0.15 / GAMMA0       # Fermi level [GAMMA0 units]
+mu_eff = 0.0 / GAMMA0       # Fermi level [GAMMA0 units]
 
 # -----------------------------------------------------------
 

@@ -1,7 +1,7 @@
 import numpy as np
 
 class McCannSystem:
-    def __init__(self, gamma0, gamma1, valley_idx, Delta, N):
+    def __init__(self, gamma0, gamma1, valley_idx, Delta, N, h0=0.0):
         """
         Initialize a system following McCann's model for ABC-stacked graphene.
 
@@ -17,6 +17,8 @@ class McCannSystem:
             Gap = 2*Delta
         N : int
             Number of layers in the system
+        h0 : float, optional
+            Diagonal shift (SOC-related)
         """
 
         self.gamma0 = gamma0
@@ -24,6 +26,7 @@ class McCannSystem:
         self.valley_idx = valley_idx
         self.Delta = Delta
         self.N = N
+        self.h0 = h0
 
     def X_at_k(self, k, phi):
         """
@@ -66,17 +69,17 @@ class McCannSystem:
 
         Returns
         -------
-        energy : array, float (as input k)
-            absolute value of the symmetrical energy bands evaluated at the given k-path.
+        energies : array, float (2, len(k))
+            The two energy bands evaluated at the given k-path.
         """
 
         X = self.X_at_k(k, phi)
-        # self.hamiltonian = np.array([[self.Delta, X], [np.conj(X), -self.Delta]])
+        # self.hamiltonian = np.array([[self.h0 + self.Delta, X], [np.conj(X), self.h0 - self.Delta]])
 
         energy = np.sqrt(np.abs(X)**2 + self.Delta**2)
         self.energy = energy
 
-        return energy
+        return np.array([self.h0 + energy, self.h0 - energy])
     
     def get_eigenstates(self):
         """

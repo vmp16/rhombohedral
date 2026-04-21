@@ -28,11 +28,9 @@ def main():
     fig, ax = plt.subplots(1, 2, figsize=(13, 7), sharex=True, sharey=True)
 
     for i, (xi, delta_K) in enumerate(zip(VALLEY_IDX, DELTAS)):
-        # Build one system per spin with effective Delta accounting for the SOC
-        delta_up = delta_K[0] + xi * LAMBDA
-        delta_dn = delta_K[1] - xi * LAMBDA
-        system_up = McCannSystem(GAMMA0, GAMMA1, xi, delta_up, N)
-        system_dn = McCannSystem(GAMMA0, GAMMA1, xi, delta_dn, N)
+        # Build one system per spin with diagonal shift h0 accounting for the SOC
+        system_up = McCannSystem(GAMMA0, GAMMA1, xi, delta_K[0], N, h0=xi * LAMBDA)
+        system_dn = McCannSystem(GAMMA0, GAMMA1, xi, delta_K[1], N, h0=-xi * LAMBDA)
 
         # Map k-space to consider in polar coordinates (p, phi)
         # For the x direction, phi=0
@@ -43,10 +41,10 @@ def main():
         energy_up = system_up.get_energy_bands(k, phi)
         energy_dn = system_dn.get_energy_bands(k, phi)
 
-        ax[i].plot(k, energy_up, color='blue', label='spin up')
-        ax[i].plot(k, -energy_up, color='blue')
-        ax[i].plot(k, energy_dn, color='red', label='spin down')
-        ax[i].plot(k, -energy_dn, color='red')
+        ax[i].plot(k, energy_up[0], color='blue', label='spin up')
+        ax[i].plot(k, energy_up[1], color='blue')
+        ax[i].plot(k, energy_dn[0], color='red', label='spin down')
+        ax[i].plot(k, energy_dn[1], color='red')
         
         ax[i].set_xlabel("k", fontsize=16)
         ax[i].set_title(f"Valley index {xi}", fontsize=16)

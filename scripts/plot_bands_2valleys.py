@@ -35,8 +35,8 @@ def main():
         # Get the energy
         energy = system.get_energy_bands(k, phi)
 
-        ax[i].plot(k, energy, color='blue')
-        ax[i].plot(k, -energy, color='blue')
+        ax[i].plot(k, energy[0], color='blue')
+        ax[i].plot(k, energy[1], color='blue')
 
         ax[i].set_xlabel("k")
         ax[i].set_title(f"Valley index {xi}")

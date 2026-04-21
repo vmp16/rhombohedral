@@ -26,7 +26,7 @@ def compare_valleys():
         
         # 1. Calculate Bands
         energies = system.get_energy_bands(k_plot, phi)
-        pos_band = energies # energies is already the positive band from get_energy_bands
+        pos_band = energies[0] # energies[0] is the positive band from get_energy_bands
         
         # 2. Calculate Berry Curvature
         omega = calculate_berry_curv(system)[:, 0] # Positive band
