@@ -25,6 +25,30 @@ def fermi_distrib(E, mu_eff, T_eff):
     x_clipped = np.clip(x, -700, 700)
     return 1 / (1 + np.exp(x_clipped))
 
+def deriv_fermi_distrib(E, mu_eff, T_eff):
+    """
+    Returns the derivative of the Fermi distribution with respect to the energy.
+
+    Parameters
+    ----------
+    E : float
+        Energy in t1 units
+    mu_eff : float
+        Fermi level in t1 units
+    T_eff : float
+        Scalated temperature (kB * T_real / t1)
+
+    Returns
+    ----------
+    df_dE(E, T, mu) : float
+        Corresponding value of the Fermi distribution's derivative.
+    """
+    x = (E - mu_eff) / T_eff
+    # Avoid overflow in exp by clipping x
+    x_clipped = np.clip(x, -700, 700)
+
+    return - (fermi_distrib(E, mu_eff, T_eff))**2 * np.exp(x_clipped) / T_eff
+
 def calculate_berry_curv(system):
     """
     Calculate the Berry curvature in the out-of-plane direction using the Kubo-like formula.
@@ -232,6 +256,12 @@ def velocity_operator(system, idx1, idx2):
     Vx = np.einsum('kc,kcd,kd->k', U_dag[:, idx1, :], dH_dx, U[:, :, idx2])
     Vy = np.einsum('kc,kcd,kd->k', U_dag[:, idx1, :], dH_dy, U[:, :, idx2])
 
+    # Diagonal elements (intraband velocity) are physical observables and must be purely real.
+    # We drop any negligible imaginary numerical noise. Off-diagonal elements remain complex.
+    if idx1 == idx2:
+        Vx = np.real(Vx)
+        Vy = np.real(Vy)
+
     return Vx, Vy
 
 def get_omega_z(system, band_idx, k_lim, n_pts):
@@ -290,9 +320,9 @@ def get_omega_z(system, band_idx, k_lim, n_pts):
 
     return omega_z
 
-def get_G(system, band_idx, k_lim, n_pts):
+def get_G(system, band_idx):
     """
-    Calculate the G tensor taking part in the Electric Non Linear AHE for a 2D, 2-band model.
+    Calculate the G tensor taking part in the Electric Non Linear AHE for a 2D, 2-band model. The system needs to be previously evaluated over a certain k-area.
 
     Parameters
     ----------
@@ -300,15 +330,11 @@ def get_G(system, band_idx, k_lim, n_pts):
         The physical system.
     band_idx : int
         Index of the band of interest.
-    k_limit : float
-        Half-width of the square grid in k-space.
-    n_points : int
-        Number of points along each dimension of the grid.
 
     Return
     ------
-    G_xy, G_yx : array
-        2D cartesian components of the G tensor.
+    G_tensor : 2D-array
+        G tensor in cartesian coordinates.
     """
     # Define the missing index for a 2-band model
     if band_idx not in (0, 1):
@@ -316,37 +342,25 @@ def get_G(system, band_idx, k_lim, n_pts):
         return
     n_idx = 1 - band_idx
 
-    # Evaluate the system at a squared area
-    kx_vals = np.linspace(-k_lim, k_lim, n_pts)
-    ky_vals = np.linspace(-k_lim, k_lim, n_pts)
-    KX, KY = np.meshgrid(kx_vals, ky_vals)
-
-    kx_flat = KX.flatten()
-    ky_flat = KY.flatten()
-
-    # Convert to polar coordinates
-    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
-    phi_flat = np.arctan2(ky_flat, kx_flat)
-
-    # Avoid singularity at k=0
-    k_flat[k_flat == 0] = 1e-6
-
-    # Evaluate the system
-    energies = system.get_energy_bands(k_flat, phi_flat)
-
-    # Separate the bands
-    e0 = energies[band_idx]
-    e1 = energies[n_idx]
+    # Get the energy bands
+    e0 = system.h0 + (-1)**band_idx * system.energy
+    e1 = system.h0 + (-1)**n_idx * system.energy
 
     # Calculate the interband velocities for a 2D system (x, y)
     Vx_01, Vy_01 = velocity_operator(system, band_idx, n_idx)
     Vx_10, Vy_10 = velocity_operator(system, n_idx, band_idx)
 
-    # Calculate the tensor G
-    G_xy = np.real((Vx_01 * Vy_10) / ((e0 - e1)**3))
-    G_yx = np.real((Vy_01 * Vx_10) / ((e0 - e1)**3))
+    # Calculate the tensor components
+    G_xx = 2 * np.real((Vx_01 * Vx_10) / ((e0 - e1)**3))
+    G_xy = 2 * np.real((Vx_01 * Vy_10) / ((e0 - e1)**3))
+    G_yx = 2 * np.real((Vy_01 * Vx_10) / ((e0 - e1)**3))
+    G_yy = 2 * np.real((Vy_01 * Vy_10) / ((e0 - e1)**3))
 
-    return G_xy, G_yx
+    # Build the tensor
+    G_tensor = np.array([[G_xx, G_xy],
+                         [G_yx, G_yy]])
+
+    return G_tensor
 
 def get_F(system, band_idx, k_lim, n_pts):
     """
@@ -390,3 +404,75 @@ def get_F(system, band_idx, k_lim, n_pts):
     return F_xz, F_yz
 
 # def get_orbital_momentum()
+
+def get_electric_NLAHE(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
+    """
+    Calculate the Electric Non-Linear AHE (positional shift) for the given band.
+
+    Parameters
+    ----------
+    system : McCannSystem
+        The physical system.
+    band_idx : int
+        Index of the band of interest.
+    k_limit : float
+        Half-width of the square grid in k-space.
+    n_points : int
+        Number of points along each dimension of the grid.
+    T_eff : float
+        Scaled temperature (kB * T_real / t1)
+    mu_eff : float
+        Scaled chemical potential (mu / t1)
+
+    Return
+    ------
+    """
+    # Evaluate the system at a squared area
+    kx_vals = np.linspace(-k_lim, k_lim, n_pts)
+    ky_vals = np.linspace(-k_lim, k_lim, n_pts)
+    KX, KY = np.meshgrid(kx_vals, ky_vals)
+
+    kx_flat = KX.flatten()
+    ky_flat = KY.flatten()
+
+    # Convert to polar coordinates
+    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
+    phi_flat = np.arctan2(ky_flat, kx_flat)
+
+    # Avoid singularity at k=0
+    k_flat[k_flat == 0] = 1e-6
+
+    # Evaluate the system
+    energies = system.get_energy_bands(k_flat, phi_flat)
+
+    # Set factors for integration
+    dk = kx_vals[1] - kx_vals[0]
+    prefactor = (dk**2) / (2 * np.pi)**2
+
+    # Select the energy band
+    band_E = energies[band_idx]
+
+    # Get the tensor G
+    G_tensor = get_G(system, band_idx)
+
+    # Get the velocities
+    Vx, Vy = velocity_operator(system, band_idx, band_idx)
+    V_vector = np.array([Vx, Vy])
+
+    # Get the derivative of the Fermi distribution
+    df_dE = deriv_fermi_distrib(band_E, mu_eff, T_eff)
+
+    # Calculate the full tensor T_{ijl} = V_i * G_{jl} - V_j * G_{il}
+    # V_vector is (2, N_points), G_tensor is (2, 2, N_points)
+    # Resulting tensor shape: (2, 2, 2, N_points)
+    term1 = np.einsum('ik, jlk -> ijlk', V_vector, G_tensor)
+    term2 = np.einsum('jk, ilk -> ijlk', V_vector, G_tensor)
+    T_tensor = term1 - term2
+
+    # Integrate over the Fermi Surface summing over the k-points (last axis)
+    integral = np.sum(T_tensor * df_dE, axis=-1)
+
+    # Multiply by the prefactor
+    chi_tensor = integral * prefactor
+
+    return chi_tensor

@@ -9,19 +9,17 @@ sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import calculate_berry_curv, calculate_berry_integral
-from model.config import GAMMA0, GAMMA1, DELTA, N, N_LINEAR, K_MAX_INT
+from model.config import GAMMA0, GAMMA1, DELTA, N, N_LINEAR, K_MAX_INT, VALLEY_IDX
 
 def compare_valleys():
     # Setup k-range for plotting
     k_plot = np.linspace(-0.5, 0.5, 500)
     phi = 0  # Plot along kx
-    
-    valleys = [1, -1]
     results = {}
 
     plt.figure(figsize=(12, 5))
 
-    for i, xi in enumerate(valleys):
+    for i, xi in enumerate(VALLEY_IDX):
         system = McCannSystem(GAMMA0, GAMMA1, xi, DELTA, N)
         
         # 1. Calculate Bands

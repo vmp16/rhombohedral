@@ -9,19 +9,9 @@ sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import calculate_ahe
-from model.config import GAMMA0, GAMMA1, N, N_LINEAR, K_MAX_INT as K_MAX
+from model.config import GAMMA0, GAMMA1, N, N_LINEAR, K_MAX_INT as K_MAX, DELTAS, VALLEY_IDX
 
 # -------------------- CONFIGURATION ------------------------
-
-DELTA1UP = 0.1
-DELTA1DN = 0.0
-DELTA2UP = 0.0
-DELTA2DN = -0.2
-
-DELTAS = np.array([[DELTA1UP, DELTA1DN],
-                   [DELTA2UP, DELTA2DN]])
-
-VALLEY_IDX = [1,-1]
 
 # General constants
 kB = 8.617e-5       # Boltzmann constant in eV/K

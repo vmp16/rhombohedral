@@ -8,15 +8,13 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 from model.model import McCannSystem
-from model.config import GAMMA0, GAMMA1, N, N_PTS, K_MIN, K_MAX
+from model.config import GAMMA0, GAMMA1, N, N_PTS, K_MIN, K_MAX, VALLEY_IDX
 
 # -------------------- CONFIGURATION ------------------------
 
 DELTA1 = 0.05
 DELTA2 = -DELTA1 # 0.1
 DELTAS = [DELTA1, DELTA2]
-
-VALLEY_IDX = [1,-1]
 
 # -----------------------------------------------------------
 

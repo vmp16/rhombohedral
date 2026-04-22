@@ -1,7 +1,7 @@
 import numpy as np
 
 class McCannSystem:
-    def __init__(self, gamma0, gamma1, valley_idx, Delta, N, h0=0.0):
+    def __init__(self, gamma0, gamma1, valley_idx, Delta, N, gamma4=0.0, h0=0.0):
         """
         Initialize a system following McCann's model for ABC-stacked graphene.
 
@@ -17,6 +17,8 @@ class McCannSystem:
             Gap = 2*Delta
         N : int
             Number of layers in the system
+        gamma4 : float, optional
+            Hopping breaking electron-hole symmetry
         h0 : float, optional
             Diagonal shift (SOC-related)
         """
@@ -26,6 +28,7 @@ class McCannSystem:
         self.valley_idx = valley_idx
         self.Delta = Delta
         self.N = N
+        self.gamma4 = gamma4
         self.h0 = h0
 
     def X_at_k(self, k, phi):
@@ -55,6 +58,28 @@ class McCannSystem:
         self.X = X
 
         return X
+    
+    def add_H3c(self, k):
+        """
+        Calculates the second-order term H_3c to the system, responsible for breaking the electron-hole symmetry.
+
+        Parameters:
+        -----------
+        k : float or array
+            Module from the polar coordinates of the momentum.
+
+        Returns:
+        --------
+        h0 : float or array (k-shaped)
+            Value of the additional diagonal term.
+        """
+        # Build the velocities in the expression of the hamiltonian
+        v = (np.sqrt(3) / 2) * self.gamma0
+        v4 = (np.sqrt(3) / 2) * self.gamma4
+
+        h0 = (2 * v * v4 * k**2)/ self.gamma1
+
+        return h0
 
     def get_energy_bands(self, k, phi):
         """
@@ -73,13 +98,17 @@ class McCannSystem:
             The two energy bands evaluated at the given k-path.
         """
 
+        # Calculate the different terms taking part in the energies
         X = self.X_at_k(k, phi)
-        # self.hamiltonian = np.array([[self.h0 + self.Delta, X], [np.conj(X), self.h0 - self.Delta]])
+        h0 = self.add_H3c(k) # is 0 when gamma4 == 0
+        self.h0 = h0
+
+        # self.hamiltonian = np.array([[h0 + self.Delta, X], [np.conj(X), h0 - self.Delta]])
 
         energy = np.sqrt(np.abs(X)**2 + self.Delta**2)
         self.energy = energy
 
-        return np.array([self.h0 + energy, self.h0 - energy])
+        return np.array([h0 + energy, h0 - energy])
     
     def get_eigenstates(self):
         """
