@@ -1,5 +1,39 @@
 import numpy as np
 
+def get_kmesh(k_lim, n_pts):
+    """
+    Generate a square mesh in k-space and its polar representation.
+
+    Parameters:
+    -----------
+    k_lim : float
+        Half-width of the square grid in k-space.
+    n_pts : int
+        Number of points along each dimension of the grid.
+
+    Returns:
+    --------
+    KX, KY : 2D-arrays
+        Cartesian meshgrid.
+    k_flat, phi_flat : 1D-arrays
+        Flat arrays of polar coordinates, with k=0 singularity handled.
+    """
+    kx_vals = np.linspace(-k_lim, k_lim, n_pts)
+    ky_vals = np.linspace(-k_lim, k_lim, n_pts)
+    KX, KY = np.meshgrid(kx_vals, ky_vals)
+
+    kx_flat = KX.flatten()
+    ky_flat = KY.flatten()
+
+    # Convert to polar coordinates
+    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
+    phi_flat = np.arctan2(ky_flat, kx_flat)
+
+    # Avoid singularity at k=0
+    k_flat[k_flat == 0] = 1e-6
+
+    return KX, KY, k_flat, phi_flat
+
 def fermi_distrib(E, mu_eff, T_eff):
     """
     Returns the Fermi distribution value.
@@ -113,16 +147,7 @@ def calculate_berry_integral(system, k_limit, n_points, e_max=None):
     integral : array
         A numpy array containing the integral for each band.
     """
-    kx_vals = np.linspace(-k_limit, k_limit, n_points)
-    ky_vals = np.linspace(-k_limit, k_limit, n_points)
-    KX, KY = np.meshgrid(kx_vals, ky_vals)
-
-    kx_flat = KX.flatten()
-    ky_flat = KY.flatten()
-
-    # Convert to polar coordinates
-    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
-    phi_flat = np.arctan2(ky_flat, kx_flat)
+    KX, KY, k_flat, phi_flat = get_kmesh(k_limit, n_points)
 
     if e_max is not None:
         energies = system.get_energy_bands(k_flat, phi_flat)
@@ -133,14 +158,11 @@ def calculate_berry_integral(system, k_limit, n_points, e_max=None):
     k_in = k_flat[mask]
     phi_in = phi_flat[mask]
 
-    # Avoid singularity at k=0
-    k_in[k_in == 0] = 1e-6
-
     # Update system states for the selected points
     system.get_energy_bands(k_in, phi_in)
     Omega_in = calculate_berry_curv(system)
 
-    dk = kx_vals[1] - kx_vals[0]
+    dk = KX[0, 1] - KX[0, 0]
     area_per_point = dk**2
 
     integral = np.sum(Omega_in, axis=0) * area_per_point
@@ -168,24 +190,12 @@ def calculate_ahe(system, k_lim, n_pts, T_eff, mu_eff):
     sigma_xy_list : array
         the Hall conductivity per band.
     """
-    kx_vals = np.linspace(-k_lim, k_lim, n_pts)
-    ky_vals = np.linspace(-k_lim, k_lim, n_pts)
-    KX, KY = np.meshgrid(kx_vals, ky_vals)
-
-    kx_flat = KX.flatten()
-    ky_flat = KY.flatten()
-
-    # Convert to polar coordinates
-    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
-    phi_flat = np.arctan2(ky_flat, kx_flat)
-
-    # Avoid singularity at k=0
-    k_flat[k_flat == 0] = 1e-6
+    KX, KY, k_flat, phi_flat = get_kmesh(k_lim, n_pts)
 
     energies = system.get_energy_bands(k_flat, phi_flat)
     Omega = calculate_berry_curv(system)
 
-    dk = kx_vals[1] - kx_vals[0]
+    dk = KX[0, 1] - KX[0, 0]
     prefactor = (dk**2) / (2 * np.pi)
 
     sigma_xy_list = []
@@ -290,19 +300,7 @@ def get_omega_z(system, band_idx, k_lim, n_pts):
     
     n_idx = 1 - band_idx
     
-    kx_vals = np.linspace(-k_lim, k_lim, n_pts)
-    ky_vals = np.linspace(-k_lim, k_lim, n_pts)
-    KX, KY = np.meshgrid(kx_vals, ky_vals)
-
-    kx_flat = KX.flatten()
-    ky_flat = KY.flatten()
-
-    # Convert to polar coordinates
-    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
-    phi_flat = np.arctan2(ky_flat, kx_flat)
-
-    # Avoid singularity at k=0
-    k_flat[k_flat == 0] = 1e-6
+    KX, KY, k_flat, phi_flat = get_kmesh(k_lim, n_pts)
 
     # Evaluate the system
     energies = system.get_energy_bands(k_flat, phi_flat)
@@ -407,7 +405,7 @@ def get_F(system, band_idx, k_lim, n_pts):
 
 def get_electric_NLAHE(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
     """
-    Calculate the Electric Non-Linear AHE (positional shift) for the given band.
+    Calculate the Electric Non-Linear AHE (transverse positional shift) for the given band.
 
     Parameters
     ----------
@@ -426,27 +424,18 @@ def get_electric_NLAHE(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
 
     Return
     ------
+    chi_tensor : 3D-array
+        Response tensor with shape (2, 2, 2). The first index corresponds to the current direction (i), 
+        and the last two indices correspond to the electric field components (j, l).
     """
     # Evaluate the system at a squared area
-    kx_vals = np.linspace(-k_lim, k_lim, n_pts)
-    ky_vals = np.linspace(-k_lim, k_lim, n_pts)
-    KX, KY = np.meshgrid(kx_vals, ky_vals)
-
-    kx_flat = KX.flatten()
-    ky_flat = KY.flatten()
-
-    # Convert to polar coordinates
-    k_flat = np.sqrt(kx_flat**2 + ky_flat**2)
-    phi_flat = np.arctan2(ky_flat, kx_flat)
-
-    # Avoid singularity at k=0
-    k_flat[k_flat == 0] = 1e-6
+    KX, KY, k_flat, phi_flat = get_kmesh(k_lim, n_pts)
 
     # Evaluate the system
     energies = system.get_energy_bands(k_flat, phi_flat)
 
     # Set factors for integration
-    dk = kx_vals[1] - kx_vals[0]
+    dk = KX[0, 1] - KX[0, 0]
     prefactor = (dk**2) / (2 * np.pi)**2
 
     # Select the energy band
@@ -468,6 +457,69 @@ def get_electric_NLAHE(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
     term1 = np.einsum('ik, jlk -> ijlk', V_vector, G_tensor)
     term2 = np.einsum('jk, ilk -> ijlk', V_vector, G_tensor)
     T_tensor = term1 - term2
+
+    # Integrate over the Fermi Surface summing over the k-points (last axis)
+    integral = np.sum(T_tensor * df_dE, axis=-1)
+
+    # Multiply by the prefactor
+    chi_tensor = integral * prefactor
+
+    return chi_tensor
+
+def get_electric_shift(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
+    """
+    Calculate the Electric Non-Linear AHE (transverse positional shift) for the given band.
+
+    Parameters
+    ----------
+    system : McCannSystem
+        The physical system.
+    band_idx : int
+        Index of the band of interest.
+    k_limit : float
+        Half-width of the square grid in k-space.
+    n_points : int
+        Number of points along each dimension of the grid.
+    T_eff : float
+        Scaled temperature (kB * T_real / t1)
+    mu_eff : float
+        Scaled chemical potential (mu / t1)
+
+    Return
+    ------
+    chi_tensor : 3D-array
+        Response tensor with shape (2, 2, 2). The first index corresponds to the current direction (i), 
+        and the last two indices correspond to the electric field components (j, l).
+    """
+
+    # Evaluate the system at a squared area
+    KX, KY, k_flat, phi_flat = get_kmesh(k_lim, n_pts)
+
+    # Evaluate the system
+    energies = system.get_energy_bands(k_flat, phi_flat)
+
+    # Set factors for integration
+    dk = KX[0, 1] - KX[0, 0]
+    prefactor = (dk**2) / (2 * np.pi)**2
+
+    # Select the energy band
+    band_E = energies[band_idx]
+
+    # Get the tensor G
+    G_tensor = get_G(system, band_idx)
+
+    # Get the velocities
+    Vx, Vy = velocity_operator(system, band_idx, band_idx)
+    V_vector = np.array([Vx, Vy])
+
+    # Get the derivative of the Fermi distribution
+    df_dE = deriv_fermi_distrib(band_E, mu_eff, T_eff)
+
+    # Build intermediate tensor
+    term1 = np.einsum('ck, abk -> cabk', V_vector, G_tensor)
+    term2 = np.einsum('ak, bck -> cabk', V_vector, G_tensor)
+    term3 = np.einsum('bk, ack -> cabk', V_vector, G_tensor)
+    T_tensor = 2 * term1 - (term2 + term3) / 2
 
     # Integrate over the Fermi Surface summing over the k-points (last axis)
     integral = np.sum(T_tensor * df_dE, axis=-1)

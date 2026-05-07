@@ -7,8 +7,8 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.append(str(project_root))
 
 from model.model import McCannSystem
-from model.analysis import get_electric_NLAHE
-from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, GAMMA4, N, N_LINEAR, K_MAX_INT as K_MAX, DELTAS, VALLEY_IDX
+from model.analysis import get_electric_shift
+from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, N, N_LINEAR, K_MAX_INT as K_MAX, DELTAS, VALLEY_IDX
 
 # -------------------- CONFIGURATION ------------------------
 
@@ -23,16 +23,16 @@ mu_eff = -0.01 / GAMMA0       # Fermi level [GAMMA0 units]
 # -----------------------------------------------------------
 
 def main():
-    print(10*"="+" CALCULATING TRANSVERSE ELECTRIC POSITIONAL SHIFT "+10*"=")
-    system = McCannSystem(GAMMA0, GAMMA1, 1, DELTAS[0, 1], N, gamma2=0, gamma3=0, gamma4=0)
+    print(10*"="+" CALCULATING ELECTRIC POSITIONAL SHIFT "+10*"=")
+    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX[0], DELTAS[0, 1], N, gamma2=GAMMA2, gamma3=GAMMA3)
 
-    chi_tensor = get_electric_NLAHE(system, 0, K_MAX, N_LINEAR, T_eff, mu_eff)
+    chi_tensor = get_electric_shift(system, 1, K_MAX, N_LINEAR, T_eff, mu_eff)
 
     print(f"tensor shape = {chi_tensor.shape}")
     print(chi_tensor)
 
     # Check if any element in chi_tensor is non-zero
-    threshold = 1e-10
+    threshold = 1e-12
     non_zero_indices = np.argwhere(np.abs(chi_tensor) > threshold)
 
     if non_zero_indices.size > 0:

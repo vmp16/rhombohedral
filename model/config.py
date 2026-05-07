@@ -3,15 +3,17 @@ import numpy as np
 # Physical parameters for the McCann Model
 GAMMA0 = 1.0     # In-layer hopping
 GAMMA1 = 0.1     # Nearest-layer vertical hopping
+GAMMA2 = -0.005  # Next-nearest-layer hopping
+GAMMA3 = 0.1     # Trigonal warping hopping
 GAMMA4 = 0.05    # Second-order hopping
 VALLEY_IDX = 1   # Valley index (1 or -1)
 N = 5            # Number of layers
 DELTA = 0.05     # Gap parameter (Gap = 2*Delta)
 
 # Numerical/Plotting Defaults
-N_PTS = 200
+N_PTS = 150
 K_MIN = -0.2
-K_MAX = 0.2
+K_MAX = 0.15
 
 # Integration Defaults
 N_LINEAR = 400
@@ -27,6 +29,3 @@ DELTAS = np.array([[DELTA1UP, DELTA1DN],
                    [DELTA2UP, DELTA2DN]])
 
 VALLEY_IDX = [1,-1]
-
-# Amplitude of the Spin-Orbit coupling (SOC)
-LAMBDA = 1e-3
