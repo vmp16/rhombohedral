@@ -123,7 +123,8 @@ def calculate_berry_curv(system):
     # Sum over the intermediate band index m (axis=2) to get the (100, 2) array
     summed_cross_term = np.sum(cross_term, axis=2)
 
-    # Here, (E_n - E_l)^2 = (2E)^2 = 4E^2
+    # Here, assuming part-hole symmetry:
+    # (E_n - E_l)^2 = (2E)^2 = 4E^2
     Omega_per_band = np.real(1j * summed_cross_term / (4 * system.energy[:, np.newaxis] ** 2))
 
     return Omega_per_band
@@ -436,7 +437,9 @@ def get_electric_NLAHE(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
 
     # Set factors for integration
     dk = KX[0, 1] - KX[0, 0]
-    prefactor = (dk**2) / (2 * np.pi)**2
+    # To have the results in units of the quantum of conductivity e^2/h
+    # we need a prefactor e/(2*pi). Using e=1, this is 1/(2*pi).
+    prefactor = (dk**2) / (2 * np.pi)
 
     # Select the energy band
     band_E = energies[band_idx]
@@ -500,7 +503,9 @@ def get_electric_shift(system, band_idx, k_lim, n_pts, T_eff, mu_eff):
 
     # Set factors for integration
     dk = KX[0, 1] - KX[0, 0]
-    prefactor = (dk**2) / (2 * np.pi)**2
+    # To have the results in units of the quantum of conductivity e^2/h
+    # we need a prefactor e/(2*pi). Using e=1, this is 1/(2*pi).
+    prefactor = (dk**2) / (2 * np.pi)
 
     # Select the energy band
     band_E = energies[band_idx]

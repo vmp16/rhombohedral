@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -12,6 +12,8 @@
 \begin{document}
 
 \maketitle
+
+\chapter{Anomalous Hall Effect}
 
 \section{Introduction}
 This report analyzes the behavior of ABC-stacked multilayer graphene using the McCann model. We specifically compare the cases for $N=1$ (monolayer) and $N=5$ layers, focusing on their energy bands, Berry curvature, and the convergence of the local Chern number contribution.
@@ -115,7 +117,7 @@ Figure \ref{fig:valley_comp} compares the positive energy band and the correspon
     \includegraphics[width=1.0\textwidth]{../figures/valley_comparison_detailed.png}
     \caption{Comparison of the positive energy band (left) and Berry curvature (right) for valleys $\xi=1$ and $\xi=-1$ ($N=5$ layers).}
     \label{fig:valley_comp}
-\end{figure}
+    \end{figure}
 
 Consequently, the local Chern number contributions for $N=5$ have opposite signs. The integration of the Berry curvature over a circle of radius k=1 gives:
 \begin{itemize}
@@ -141,12 +143,6 @@ The calculated total conductivity for the spin-valley case (without SOC) is:
 \end{equation}
 which corresponds to the sum of the Chern contributions of the occupied bands ($N/2 = 2.5$ per valley per spin when applicable).
 
-When including the Spin-Orbit Coupling ($\lambda = 10^{-3} \gamma_0$), the results at $\mu=0$ remain consistent with the topological expectation:
-\begin{equation}
-    \sigma_{xy}^{total, SOC}(\mu=0) \approx -5.000 \,\, e^2/h
-\end{equation}
-as the SOC slightly shifts the gaps but the overall topology of the occupied manifold at $\mu=0$ is preserved.
-
 \subsection{AHE vs. Chemical Potential}
 The dependence of the AHE on the chemical potential $\mu$ was scanned using the following parameters:
 \begin{itemize}
@@ -163,7 +159,104 @@ Figure \ref{fig:ahe_scan} shows the results of the scan. It is important to note
     \label{fig:ahe_scan}
 \end{figure}
 
-\section{Conclusion}
-The $N$-layer McCann system exhibits a topological Berry phase of $N\pi$, leading to a local Chern contribution of $N/2$ per valley in the gapped state. The distribution of the Berry curvature becomes increasingly non-trivial as $N$ increases, with the peak shifting away from the Dirac point while the total topological charge remains conserved and proportional to $N$.
+\chapter{NonLinear AHE and positional shift}
+
+\section{Hamiltonian with Trigonal Warping}
+
+In polar coordinates \((k, \phi) \in \left( [0, +\infty[, [0, 2\pi] \right)\), we define \(\pi = vke^{i\xi\phi}\).
+
+\begin{equation}
+    \mathcal{H}_{\xi, s} = \begin{pmatrix}
+        \Delta_{\xi, s} & X(\pi) \\
+        X^{\dagger}(\pi) & -\Delta_{\xi, s}
+    \end{pmatrix}
+\end{equation}
+
+To introduce the trigonal warping, we expand \(X(\pi)\) to first order in perturbations (\(v_3, \gamma_2\)) with \(N = n_1 + 2n_2 +3n_3\), \(n_2\) being the order of \(v_3\) and \(n_3\) the order of \(\gamma_2\). \(X_0\) is the unpertrubed zero order term, then we write \(X_{n_2, n_3}\):
+
+\begin{align}
+    &X_0 = \frac{\pi^N}{(-\gamma_1)^{N-1}}\\
+    X_{10} = (N-1)& \frac{v_3 \pi^{N-2} \pi^{\dagger}}{v(-\gamma_1)^{N-2}} = -\frac{4v_3v^3}{\gamma_1^3}k^4e^{i2\phi}\\
+    X_{01} = \frac{(N-2)}{2}&\gamma_2 \left(\frac{\pi}{-\gamma_1}\right) = \frac{3v^2\gamma_2}{2\gamma_1^2}k^2e^{i2\phi}
+\end{align}
+
+\section{Nonlinear Conductivity}
+
+For a given band:
+
+\begin{equation}
+    \sigma^{ijl} = \frac{\partial j_i}{\partial E_j \partial E_l} = \frac{e^3}{\hbar^2} \int \frac{d^2k}{(2\pi)^2} \frac{\partial f_n}{\partial \varepsilon_n} \left[ 2v_i G_{jl} - \frac{1}{2} \left(v_j G_{li} + v_l G_{ji}\right) \right]
+\end{equation}
+
+With the quantum metric for band 0 defined by:
+
+\begin{equation}
+    G_{ij} = 2\text{Re} \sum_{n \neq 0} \frac{(V_i)_{0n} (V_j)_{n0}}{(\varepsilon_0 - \varepsilon_n)^3}
+\end{equation}
+
+\section{Symmetry Constraints on the Conductivity}
+
+\begin{itemize}
+    \item \textbf{Mirror $\mathcal{M}_y\ (y \to -y)$:} components with an odd number of $y$ are 0.
+    \item \textbf{$C_{3z}$ rotation:} only non-zero components are related: $\sigma_{xxx} = -\sigma_{xyy} = -\sigma_{yxy} = -\sigma_{yyx}$
+\end{itemize}
+
+\section{Evolution of Nonlinear Conductivity}
+
+In this chapter, we analyze the behavior of the nonlinear conductivity $\sigma_{xxx}$ related to the positional shift. We focus on its dependence on the chemical potential $\mu$ for various gap configurations defined by the parameters $\Delta_{v,s}$, where $v \in \{K, K'\}$ and $s \in \{\uparrow, \downarrow\}$.
+
+The plots below show the evolution of $\sigma_{xxx}$ for different scenarios of gap symmetries. The shaded regions represent the energy gaps for each spin and valley.
+
+\subsection{Scenario A: Symmetric Gaps, Zero Minors}
+Parameters: $\Delta_{K\uparrow}=0.1, \Delta_{K\downarrow}=0.0, \Delta_{K'\uparrow}=0.0, \Delta_{K'\downarrow}=-0.1$.
+Here $\Delta_{1\uparrow} = -\Delta_{2\downarrow}$ and $\Delta_{1\downarrow} = \Delta_{2\uparrow} = 0$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figures/scan_mu_PS_A.png}
+    \caption{Nonlinear conductivity for symmetric gaps with zero minor gaps.}
+    \label{fig:scan_A}
+\end{figure}
+
+\subsection{Scenario B: Symmetric Gaps, Non-Zero Minors}
+Parameters: $\Delta_{K\uparrow}=0.1, \Delta_{K\downarrow}=0.05, \Delta_{K'\uparrow}=0.05, \Delta_{K'\downarrow}=-0.1$.
+Here $\Delta_{1\uparrow} = -\Delta_{2\downarrow}$ and $\Delta_{1\downarrow} = \Delta_{2\uparrow} \neq 0$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figures/scan_mu_PS_B.png}
+    \caption{Nonlinear conductivity for symmetric gaps with non-zero minor gaps.}
+    \label{fig:scan_B}
+\end{figure}
+
+\subsection{Scenario C: Asymmetric Gaps, Zero Minors}
+Parameters: $\Delta_{K\uparrow}=0.1, \Delta_{K\downarrow}=0.0, \Delta_{K'\uparrow}=0.0, \Delta_{K'\downarrow}=-0.2$.
+Here $\Delta_{1\uparrow} \neq -\Delta_{2\downarrow}$ and $\Delta_{1\downarrow} = \Delta_{2\uparrow} = 0$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figures/scan_mu_PS_C.png}
+    \caption{Nonlinear conductivity for asymmetric gaps with zero minor gaps.}
+    \label{fig:scan_C}
+\end{figure}
+
+\subsection{Scenario D: Asymmetric Gaps, Non-Zero Minors}
+Parameters: $\Delta_{K\uparrow}=0.1, \Delta_{K\downarrow}=0.05, \Delta_{K'\uparrow}=0.05, \Delta_{K'\downarrow}=-0.2$.
+Here $\Delta_{1\uparrow} \neq -\Delta_{2\downarrow}$ and $\Delta_{1\downarrow} = \Delta_{2\uparrow} \neq 0$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../figures/scan_mu_PS_D.png}
+    \caption{Nonlinear conductivity for asymmetric gaps with non-zero minor gaps.}
+    \label{fig:scan_D}
+\end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{../figures/scan_mu_PS_D_limited.png}
+%     \caption{Nonlinear conductivity for asymmetric gaps with non-zero minor gaps (Zoomed to [-100, 100]).}
+%     \label{fig:scan_D_lim}
+% \end{figure}
+
 
 \end{document}

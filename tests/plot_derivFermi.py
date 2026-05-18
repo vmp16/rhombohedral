@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
@@ -13,9 +12,9 @@ from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, VALLEY_IDX, DELTA, N, N
 
 # -------------------- CONFIGURATION ------------------------
 kB = 8.617e-5       # Boltzmann constant in eV/K
-T_real = 20         # temperature [K]
+T_real = 40         # temperature [K]
 T_eff = (kB * T_real) / GAMMA0
-mu_eff = -0.08 / GAMMA0  # Fermi level moved to intersect the valence band (which peaks at -0.05)
+mu_eff = 0.5 / GAMMA0  # Fermi level moved to intersect the valence band (which peaks at -0.05)
 # -----------------------------------------------------------
 
 def main():
@@ -27,7 +26,7 @@ def main():
 
     # Evaluate the system and calculate energies for the valence band (idx=1)
     energies = system.get_energy_bands(k_flat, phi_flat)
-    band_E = energies[1]
+    band_E = energies[0]
 
     # Calculate the derivative of the Fermi distribution
     df_dE = deriv_fermi_distrib(band_E, mu_eff, T_eff)

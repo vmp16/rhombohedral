@@ -3,24 +3,12 @@ import numpy as np
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).resolve().parent.parent
+project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import calculate_ahe
-from model.config import GAMMA0, GAMMA1, N, N_LINEAR, K_MAX_INT as K_MAX, DELTAS, VALLEY_IDX
-
-# -------------------- CONFIGURATION ------------------------
-
-# General constants
-kB = 8.617e-5       # Boltzmann constant in eV/K
-
-T_real = 20         # temperature [K]
-T_eff = (kB * T_real) / GAMMA0
-
-mu_eff = 0.0 / GAMMA0       # Fermi level [GAMMA0 units]
-
-# -----------------------------------------------------------
+from model.config import GAMMA0, GAMMA1, N, N_LINEAR, K_MAX_INT as K_MAX, DELTAS, VALLEY_IDX, T_eff, mu_eff
 
 def main():
     print(10*'=' + f" CALCULATING THE MAGNETIC AHE FOR MU = {mu_eff} " + 10*'=')

@@ -13,7 +13,7 @@ from model.config import GAMMA0, GAMMA1, VALLEY_IDX, DELTA, N, N_PTS, K_MAX
 
 def main():
     # Build the system
-    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX[0], DELTA, N)
+    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX[1], DELTA, N)
 
     # Create a grid in k-space
     KX, KY, k_flat, phi_flat = get_kmesh(K_MAX, N_PTS)

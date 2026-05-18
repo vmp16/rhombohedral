@@ -9,13 +9,9 @@ sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import velocity_operator, get_G, get_electric_shift, get_kmesh
-from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, VALLEY_IDX, DELTA, N, N_PTS, K_MAX
+from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, VALLEY_IDX, DELTA, N, N_PTS, K_MAX, T_eff as T, mu_eff as mu
 
-# Parameters for integration
-T_real = 20
-kB = 8.617e-5
-T_eff = (kB * T_real) / GAMMA0
-mu_eff = 0.06 / GAMMA0
+band_idx = 1
 
 SHOW_PLOTS = False
 
@@ -48,7 +44,7 @@ def main():
    
     # 2. Calculate Electric Integral
     print("\nCalculating Electric Posiitonal Shift (mu_eff = 0.06)...")
-    chi_tensor = get_electric_shift(system, 0, K_MAX, N_PTS, T_eff, mu_eff)
+    chi_tensor = get_electric_shift(system, band_idx, K_MAX, N_PTS, T, mu)
     
     print(f"Total Tensor (chi_ijl):")
     print(chi_tensor)

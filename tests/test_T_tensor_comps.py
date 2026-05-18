@@ -20,7 +20,7 @@ mu_eff = 0.06 / GAMMA0       # Fermi level [GAMMA0 units]
 
 def main():
     # Build the system
-    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX[0], DELTA, N, gamma2=GAMMA2, gamma3=GAMMA3)
+    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX[1], DELTA, N, gamma2=GAMMA2, gamma3=GAMMA3)
 
     # Create a grid in k-space
     KX, KY, k_flat, phi_flat = get_kmesh(K_MAX, N_PTS)

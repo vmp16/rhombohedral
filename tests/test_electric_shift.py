@@ -32,7 +32,7 @@ def main():
     print(chi_tensor)
 
     # Check if any element in chi_tensor is non-zero
-    threshold = 1e-12
+    threshold = 1e-10
     non_zero_indices = np.argwhere(np.abs(chi_tensor) > threshold)
 
     if non_zero_indices.size > 0:

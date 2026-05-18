@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).resolve().parent.parent
+project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(project_root))
 
 from model.model import McCannSystem
@@ -59,13 +59,13 @@ def compare_valleys():
 
     plt.tight_layout()
     plot_path = project_root / "figures" / "valley_comparison_detailed.png"
-    plt.savefig(plot_path)
+    # plt.savefig(plot_path)
     print(f"Plot saved to {plot_path}")
 
     # Print results
     print("\n" + "="*40)
     print(f"Results for N={N} layers:")
-    for xi in valleys:
+    for xi in VALLEY_IDX:
         print(f"Valley xi = {xi:2d}: Local Chern Contribution = {results[xi]['chern']:.6f}")
     print("="*40)
 

@@ -9,13 +9,7 @@ sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import velocity_operator, get_G, get_electric_NLAHE, get_kmesh
-from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, VALLEY_IDX, DELTA, N, N_PTS, K_MAX
-
-# Parameters for integration
-T_real = 20
-kB = 8.617e-5
-T_eff = (kB * T_real) / GAMMA0
-mu_eff = 0.06 / GAMMA0
+from model.config import GAMMA0, GAMMA1, GAMMA2, GAMMA3, VALLEY_IDX, DELTA, N, N_PTS, K_MAX, T_eff, mu_eff
 
 def main():
     print(10*'=' + ' BREAKING P SYMMETRY WITH TRIGONAL WARPING ' + 10*'=')

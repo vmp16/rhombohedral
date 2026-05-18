@@ -4,16 +4,16 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Add project root to path
-project_root = Path(__file__).resolve().parent.parent
+project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(project_root))
 
 from model.model import McCannSystem
 from model.analysis import calculate_berry_curv
-from model.config import GAMMA0, GAMMA1, VALLEY_IDX, DELTA, N, N_PTS, K_MIN, K_MAX
+from model.config import GAMMA0, GAMMA1, KSI, DELTA, N, N_PTS, K_MIN, K_MAX
 
 def main():
     # Build the system
-    system = McCannSystem(GAMMA0, GAMMA1, VALLEY_IDX, DELTA, N)
+    system = McCannSystem(GAMMA0, GAMMA1, KSI, DELTA, N)
 
     # Map k-space to consider in polar coordinates (p, phi)
     # For the x direction, phi=0
@@ -32,12 +32,12 @@ def main():
 
     # Plotting
     plt.figure(figsize=(8, 6))
-    plt.plot(k, Omega[:, 0], label='Positive band', color='blue')
-    plt.plot(k, Omega[:, 1], label='Negative band', color='red')
+    plt.plot(k, Omega[:, 0], label='First band', color='blue')
+    plt.plot(k, Omega[:, 1], label='Second band', color='red')
 
     plt.xlabel(r'$k$')
     plt.ylabel(r'Berry Curvature ($\Omega$)')
-    plt.title(f'Berry Curvature for N={N} (McCann Model)')
+    plt.title(f'Berry Curvature for N={N}, Valley {KSI}')
     plt.legend()
     plot_path = project_root / "figures" / "berry_curv_plot.png"
     # plt.savefig(plot_path)
